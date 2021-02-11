@@ -414,6 +414,7 @@ if __name__ == '__main__':
     opt.global_rank = -1
 
     # DDP mode
+    print(f'local_rank: {opt.local_rank}')
     if opt.local_rank != -1:
         assert torch.cuda.device_count() > opt.local_rank
         torch.cuda.set_device(opt.local_rank)
