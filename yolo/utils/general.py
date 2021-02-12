@@ -22,7 +22,7 @@ from scipy.cluster.vq import kmeans
 from scipy.signal import butter, filtfilt
 from tqdm import tqdm
 
-from utils.torch_utils import init_seeds, is_parallel
+from yolo.utils.torch_utils import init_seeds, is_parallel
 
 # Set printoptions
 torch.set_printoptions(linewidth=320, precision=5, profile='long')
@@ -893,7 +893,7 @@ def output_to_target(output, width, height):
     targets = []
     for i, o in enumerate(output):
         if o is not None:
-            for pred in o:
+            for pred in o.cpu().numpy():
                 box = pred[:4]
                 w = (box[2] - box[0]) / width
                 h = (box[3] - box[1]) / height
@@ -974,7 +974,7 @@ def plot_wh_methods():  # from utils.utils import *; plot_wh_methods()
     fig.savefig('comparison.png', dpi=200)
 
 
-def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max_size=640, max_subplots=16):
+def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max_size=640, max_subplots=16, conf_thresh=0.3):
     tl = 3  # line thickness
     tf = max(tl - 1, 1)  # font thickness
     if os.path.isfile(fname):  # do not overwrite
@@ -1035,8 +1035,12 @@ def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max
             for j, box in enumerate(boxes.T):
                 cls = int(classes[j])
                 color = color_lut[cls % len(color_lut)]
-                cls = names[cls] if names else cls
-                if gt or conf[j] > 0.3:  # 0.3 conf thresh
+                try:
+                    cls = names[cls] if names else cls
+                except:
+                    import pdb; pdb.set_trace()
+                    pass
+                if gt or conf[j] > conf_thresh:  # 0.3 conf thresh
                     label = '%s' % cls if gt else '%s %.1f' % (cls, conf[j])
                     plot_one_box(box, mosaic, label=label, color=color, line_thickness=tl)
 

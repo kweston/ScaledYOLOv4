@@ -3,18 +3,19 @@
 #FROM gpuci/miniconda-cuda:11.0-devel-ubuntu20.04
 FROM nvidia/cuda:11.1-cudnn8-devel-ubuntu20.04
 
-WORKDIR /yolo
 #COPY environment.yml .
 #RUN conda update --force-reinstall conda
 #RUN conda env update --name base --file environment.yml --prune
 
 ENV MY_ROOT=/workspace \
-    PKG_PATH=/yolo/yolov4csp \
+    PKG_PATH=/src \
     NUMPROC=4 \
     PYTHON_VER=3.8 \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=. \
     DEBIAN_FRONTEND=noninteractive 
+
+WORKDIR $PKG_PATH
 
 RUN apt-get update && apt-get install -y apt-utils && apt-get -y upgrade && \
     apt-get install -y git libsnappy-dev libopencv-dev libhdf5-serial-dev libboost-all-dev libatlas-base-dev \
@@ -41,13 +42,13 @@ RUN unzip mish-cuda.zip
 WORKDIR $MY_ROOT/mish-cuda-master
 RUN cp external/CUDAApplyUtils.cuh csrc/
 RUN python setup.py build install
-WORKDIR /yolo
+WORKDIR $PKG_PATH
 # ADD https://drive.google.com/file/d/1NQwz47cW0NUgy7L3_xOKaNEfLoQuq3EL/view?usp=sharing /weights/yolov4-csp.weights
-ADD requirements.txt /requirements.txt
-RUN pip install -r /requirements.txt
-ADD models $PKG_PATH/models
-ADD utils $PKG_PATH/utils
-ADD data $PKG_PATH/data
+ADD requirements.txt $PKG_PATH/requirements.txt
+RUN pip install -r $PKG_PATH/requirements.txt
+ADD yolo $PKG_PATH/yolo
 ADD train.py $PKG_PATH/train.py
 ADD test.py $PKG_PATH/test.py
+ADD setup.py $PKG_PATH/setup.py
+RUN pip install .
 

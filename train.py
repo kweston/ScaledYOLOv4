@@ -18,14 +18,14 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
 import test  # import test.py to get mAP after each epoch
-from models.models import *
-from utils.datasets import create_dataloader
-from utils.general import (
+from yolo.models.models import *
+from yolo.utils.datasets import create_dataloader
+from yolo.utils.general import (
     check_img_size, torch_distributed_zero_first, labels_to_class_weights, plot_labels, check_anchors,
     labels_to_image_weights, compute_loss, plot_images, fitness, strip_optimizer, plot_results,
     get_latest_run, check_git_status, check_file, increment_dir, print_mutation, plot_evolution)
-from utils.google_utils import attempt_download
-from utils.torch_utils import init_seeds, ModelEMA, select_device, intersect_dicts
+from yolo.utils.google_utils import attempt_download
+from yolo.utils.torch_utils import init_seeds, ModelEMA, select_device, intersect_dicts
 
 
 def train(hyp, opt, device, tb_writer=None):
@@ -53,7 +53,7 @@ def train(hyp, opt, device, tb_writer=None):
         data_dict = yaml.load(f, Loader=yaml.FullLoader)  # model dict
     train_path = data_dict['train']
     test_path = data_dict['val']
-    nc, names = (1, ['item']) if opt.single_cls else (int(data_dict['nc']), data_dict['names'])  # number classes, names
+    nc, names = (1, data_dict['names']) if opt.single_cls else (int(data_dict['nc']), data_dict['names'])  # number classes, names
     assert len(names) == nc, '%g names found for nc=%g dataset in %s' % (len(names), nc, opt.data)  # check
 
     # Model

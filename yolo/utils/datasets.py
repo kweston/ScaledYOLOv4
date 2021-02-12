@@ -14,7 +14,7 @@ from PIL import Image, ExifTags
 from torch.utils.data import Dataset
 from tqdm import tqdm
 
-from utils.general import xyxy2xywh, xywh2xyxy, torch_distributed_zero_first
+from yolo.utils.general import xyxy2xywh, xywh2xyxy, torch_distributed_zero_first
 
 help_url = ''
 img_formats = ['.bmp', '.jpg', '.jpeg', '.png', '.tif', '.tiff', '.dng']
@@ -328,11 +328,11 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         self.stride = stride
 
         # Define labels
-        self.label_files = [x.replace('images', 'labels').replace(os.path.splitext(x)[-1], '.txt') for x in
+        self.label_files = [x.replace('JPEGImages', 'labels').replace(os.path.splitext(x)[-1], '.txt') for x in
                             self.img_files]
 
         # Check cache
-        cache_path = str(Path(self.label_files[0]).parent) + '.cache'  # cached labels
+        cache_path = str(Path(self.label_files[0]).parents[1]) + '.cache'  # cached labels
         if os.path.isfile(cache_path):
             cache = torch.load(cache_path)  # load
             if cache['hash'] != get_hash(self.label_files + self.img_files):  # dataset changed
@@ -341,7 +341,8 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
             cache = self.cache_labels(cache_path)  # cache
 
         # Get labels
-        labels, shapes = zip(*[cache[x] for x in self.img_files])
+        cached = [cache[x] for x in self.img_files]
+        labels, shapes = zip(*cached)
         self.shapes = np.array(shapes, dtype=np.float64)
         self.labels = list(labels)
 

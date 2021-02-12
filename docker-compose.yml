@@ -9,7 +9,7 @@ services:
       dockerfile: ./Dockerfile
     runtime: nvidia
     volumes:
-      - .:/yolo
+      - .:/home/dev
       - /mnt/NAS/Production/TruckBay/:/mnt/NAS/Production/TruckBay
       - /mnt/NAS/Public/parque_research/datasets/coco_yolo/coco:/mnt/coco
       - /home/kweston/darknet_utils:/home/kweston/darknet_utils
@@ -20,3 +20,4 @@ services:
     command: 
       - bash
     shm_size: 64g
+    working_dir: /home/dev
