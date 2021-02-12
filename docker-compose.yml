@@ -3,7 +3,7 @@ version: '2.3'
 
 services:
   train:
-    #image: nvcr.io/nvidia/pytorch:20.06-py3
+    image: gcr.io/yolov4-304522/yolov4-csp
     build:
       context: .
       dockerfile: ./Dockerfile

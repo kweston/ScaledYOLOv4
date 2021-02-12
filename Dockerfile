@@ -9,6 +9,7 @@ WORKDIR /yolo
 #RUN conda env update --name base --file environment.yml --prune
 
 ENV MY_ROOT=/workspace \
+    PKG_PATH=/yolo/yolov4csp \
     NUMPROC=4 \
     PYTHON_VER=3.8 \
     PYTHONUNBUFFERED=1 \
@@ -41,7 +42,12 @@ WORKDIR $MY_ROOT/mish-cuda-master
 RUN cp external/CUDAApplyUtils.cuh csrc/
 RUN python setup.py build install
 WORKDIR /yolo
-ADD https://drive.google.com/file/d/1NQwz47cW0NUgy7L3_xOKaNEfLoQuq3EL/view?usp=sharing /weights/yolov4-csp.weights
+# ADD https://drive.google.com/file/d/1NQwz47cW0NUgy7L3_xOKaNEfLoQuq3EL/view?usp=sharing /weights/yolov4-csp.weights
 ADD requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
+ADD models $PKG_PATH/models
+ADD utils $PKG_PATH/utils
+ADD data $PKG_PATH/data
+ADD train.py $PKG_PATH/train.py
+ADD test.py $PKG_PATH/test.py
 
