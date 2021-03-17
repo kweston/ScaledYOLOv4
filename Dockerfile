@@ -8,7 +8,7 @@ FROM nvidia/cuda:11.1-cudnn8-devel-ubuntu20.04
 #RUN conda env update --name base --file environment.yml --prune
 
 ENV MY_ROOT=/workspace \
-    PKG_PATH=/src \
+    PKG_PATH=/yolo_src \
     NUMPROC=4 \
     PYTHON_VER=3.8 \
     PYTHONUNBUFFERED=1 \
@@ -50,5 +50,6 @@ ADD yolo $PKG_PATH/yolo
 ADD train.py $PKG_PATH/train.py
 ADD test.py $PKG_PATH/test.py
 ADD setup.py $PKG_PATH/setup.py
+ADD data $PKG_PATH/data
 RUN pip install .
 
